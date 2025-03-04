@@ -1,8 +1,6 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Home,
-  Heart,
   Activity,
   Thermometer,
   Droplet,
@@ -13,14 +11,11 @@ import {
   Bed,
   User,
   Mountain,
-  Waves,
   Moon,
   Video,
   Calendar,
   Pill,
-  Clock,
   AlertCircle,
-  Edit,
   PlusCircle,
 } from 'lucide-react';
 
@@ -33,6 +28,14 @@ function App() {
 
   const handleTelemedicineClick = () => {
     navigate('/telemedicine');
+  };
+
+  const handleProfileEditClick = () => {
+    navigate('/profile/edit');
+  };
+
+  const handleBedAvailabilityClick = () => {
+    navigate('/bed-availability');
   };
 
   return (
@@ -72,9 +75,14 @@ function App() {
                 Appointment
               </span>
             </div>
+            
 
+            {/* Bed Availability (Fixed) */}
             <div className="flex flex-col items-center">
-              <div className="bg-purple-200/20 p-3 rounded-full cursor-pointer transition-all duration-300 hover:bg-purple-200/40 hover:scale-110">
+              <div
+                onClick={handleBedAvailabilityClick}
+                className="bg-purple-200/20 p-3 rounded-full cursor-pointer transition-all duration-300 hover:bg-purple-200/40 hover:scale-110"
+              >
                 <Bed className="w-6 h-6" />
               </div>
               <span className="text-xs mt-1 block text-center">Bed</span>
@@ -93,9 +101,12 @@ function App() {
                     <div className="flex items-center mb-4">
                       <div className="w-24 h-24 rounded-full bg-gray-200 mr-6 relative">
                         {/* Profile edit button */}
-                        <button className="absolute bottom-0 right-0 bg-purple-600 text-white p-1.5 rounded-full shadow-lg hover:bg-purple-700 transition-colors">
-                          <PlusCircle size={18} />
-                        </button>
+                  <button
+                    onClick={() => navigate("/profile/edit")}
+                    className="absolute bottom-0 right-0 bg-purple-600 text-white p-1.5 rounded-full shadow-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <PlusCircle size={18} />
+                  </button>
                       </div>
                       <div>
                         <h2 className="text-xl font-bold">Rakshith</h2>

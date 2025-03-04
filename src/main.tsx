@@ -6,6 +6,8 @@ import Login from './pages/Login.tsx';
 import Signup from './pages/Signup.tsx';
 import Appointment from './pages/Appointment.tsx';
 import Telemedicine from './pages/Telemedicine.tsx';
+import ProfileEdit from './pages/ProfileEdit.tsx';
+import BedAvailability from './pages/BedAvailability.tsx';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
   {
     path: '/telemedicine',
     element: <Telemedicine />,
+  },
+  {
+    path: '/profile/edit',
+    element: <ProfileEdit />,
+  },
+  {
+    path: '/bed-availability',
+    element: <BedAvailability />,
   },
 ]);
 
