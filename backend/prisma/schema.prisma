@@ -13,4 +13,103 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+model User {
+  id          String          @id @default(uuid()) 
+  email       String          @unique
+  password    String
+  role        Role            @default(PATIENT)
+  Blood       String
+  Height      String
+  Weight      String
+  Heart       String
+  Oxygen      String
+  Temperature String
+
+  medicalHistory MedicalHistory[]// Relation to MedicalHistory
+}
+
+
+
+//create models for hospital, bed availability ,appointments, medical history
+// and for doctors make roles for users such as doctors patients and admins
+
+model Hospital {
+  id        String   @id @default(uuid()) 
+  name      String
+  address   String
+  bed_availability  Int
+  doctors         Doctor[] // One-to-Many Relationship with Doctors
+}
+
+model Doctor {
+  id                 String   @id @default(uuid())
+  name               String
+  specialty          String
+  email              String   @unique
+  phone              String
+  hospitalId         String
+  hospital           Hospital @relation(fields: [hospitalId], references: [id])
+  appointments       Appointment[] 
+  availableSlots     AppointmentAvailability[] 
+}
+
+model AppointmentAvailability {
+  id        String   @id @default(uuid()) 
+  doctorId  String   
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade) // Correct relation
+  date      DateTime 
+  startTime DateTime 
+  endTime   DateTime 
+  isBooked  Boolean  @default(false) 
+}
+
+
+model Appointment {
+  id   String   @id @default(uuid()) // Unique ID for each appointment
+  date DateTime @default(now())
+  patientId String
+  doctorId  String
+  status    String   @default("Pending") // Default status
+
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+
+}
+
+model Patient {
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  phone       String
+  appointments Appointment[] // One-to-Many Relationship with Appointments
+}
+
+
+model MedicalHistory {
+  id              String   @id @default(uuid()) 
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pastDiagnoses   String?  // Past illnesses or diagnoses
+  medications     String?  // List of medications the patient is taking
+  allergies       String?  // Known allergies
+  surgeries       String?  // Previous surgeries
+  chronicDiseases String?  // Chronic conditions like diabetes, hypertension
+  createdAt       DateTime @default(now()) 
+  
+}
+
+// create relations so that appointments can work where in there will be patient and a doctor relation have status also
+// and have a field of string for reports which will be uploaded through cloudinary this is for patients
+//same for prescriptions have field for url which has that file uploaded in prescription
+//also an hospital will have an array of doctors
+// for docors map it to corresponding hospital using hospital id
+//create cloudinary account
+
+
+//create enum for appointment status haven pending, confirmed, 
 
