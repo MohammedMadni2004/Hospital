@@ -18,6 +18,18 @@ enum Role {
   DOCTOR
   ADMIN
 }
+
+enum BloodType {
+  A_POS
+  A_NEG
+  B_POS
+  B_NEG
+  AB_POS
+  AB_NEG
+  O_POS
+  O_NEG
+}
+
 model User {
   id          String          @id @default(uuid()) 
   email       String          @unique
@@ -29,8 +41,11 @@ model User {
   Heart       String
   Oxygen      String
   Temperature String
-
+  name       String
   medicalHistory MedicalHistory[]// Relation to MedicalHistory
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 
@@ -80,6 +95,14 @@ model Appointment {
   doctor    Doctor   @relation(fields: [doctorId], references: [id])
 
 }
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+  COMPLETED
+}
+
 
 model Patient {
   id          String        @id @default(uuid())

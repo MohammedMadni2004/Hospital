@@ -1,11 +1,18 @@
-import express from 'express'
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import router from "./routes/auth";
+
+
+dotenv.config();
+
 const app = express();
-const PORT = 3000;
 
-app.get('/', (req, res) => {
-    res.json({success: true, message :"heelo world"});
-});
+app.use(cors()); 
+app.use(bodyParser.json()); 
 
-app.listen(PORT, () => {
-    console.log(`Server is listening at http://localhost:${PORT}`);
-});
+app.use("/api/auth",router);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
