@@ -7,12 +7,34 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would validate and authenticate here
-    navigate('/dashboard');
+    setError(null); // Reset error before submitting
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed!');
+      }
+
+      localStorage.setItem('token', data.token); // Store token in local storage
+      navigate('/dashboard'); // Redirect to dashboard
+
+    } catch (err: any) {
+      setError(err.message); // Set error message
+    }
   };
 
   return (
@@ -30,6 +52,7 @@ const Login: React.FC = () => {
 
           {/* Form */}
           <div className="p-8">
+            {error && <p className="text-red-600 text-center mb-4">{error}</p>}
             <form onSubmit={handleSubmit}>
               <div className="mb-6">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
