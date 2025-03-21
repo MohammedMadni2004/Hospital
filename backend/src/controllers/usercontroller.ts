@@ -1,14 +1,9 @@
-import express from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-
+import { PrismaClient } from "@prisma/client";
+import { createToken } from "../utils/createToken";
 
 const prisma = new PrismaClient();
-const router = express.Router();
-
-const JWT_SECRET = process.env.JWT_SECRET!;
 
 
 async function register   (req:Request, res:Response)  {
@@ -26,13 +21,13 @@ async function register   (req:Request, res:Response)  {
       data: {
         email,
         password: hashedPassword,
+        Blood: bloodType,
+        Height: height,
+        Weight: weight,
+        Heart:heartRate,
+        Oxygen: oxygenLevel,
+        Temperature: temperature,
         name,
-        bloodType,
-        height: parseFloat(height),
-        weight: parseFloat(weight),
-        heartRate: parseInt(heartRate),
-        oxygenLevel: parseFloat(oxygenLevel),
-        temperature: parseFloat(temperature),
       },
     });
 
@@ -42,3 +37,21 @@ async function register   (req:Request, res:Response)  {
   }
 }
 
+async function login(req:Request, res: Response){
+  try{
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });  
+    if(!user) return res.status(400).json({ error: "User not found!" });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return res.status(400).json({ error: "Invalid Password!" });
+    const token= await createToken(user.id);
+    res.status(200).json({ message: "User logged in successfully", user:user, token:token });
+
+
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ error: "Something went wrong "});
+  }
+
+}
+export { register, login };
