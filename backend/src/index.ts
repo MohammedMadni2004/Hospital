@@ -4,14 +4,14 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoute";
 import { BodyParser } from "body-parser";
-
+import { Request, Response } from "express";
 dotenv.config();
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     credentials: true,
   })
 );
@@ -20,4 +20,7 @@ app.use("/api/user", userRoutes);
 
 
 const PORT = process.env.PORT || 5000;
+app.get('/',(req:Request,res:Response)=>{
+  res.send('Hello World')
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

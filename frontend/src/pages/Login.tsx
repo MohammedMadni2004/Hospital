@@ -12,7 +12,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Reset error before submitting
+    setError(null); 
 
     try {
       const response = await fetch('http://localhost:5000/api/auth/login', {

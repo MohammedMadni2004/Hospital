@@ -1,6 +1,12 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('PATIENT', 'DOCTOR', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "BloodType" AS ENUM ('A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG');
+
+-- CreateEnum
+CREATE TYPE "AppointmentStatus" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELED', 'COMPLETED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -13,6 +19,9 @@ CREATE TABLE "User" (
     "Heart" TEXT NOT NULL,
     "Oxygen" TEXT NOT NULL,
     "Temperature" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
