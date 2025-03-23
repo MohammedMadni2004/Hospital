@@ -1,7 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { login, register } from "../controllers/usercontroller";
+import { login, register,getProfile } from "../controllers/usercontroller";
 
 
 const userRoutes = express.Router();
