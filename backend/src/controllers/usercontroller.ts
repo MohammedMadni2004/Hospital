@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { createToken } from "../utils/createToken";
+import { CustomRequest } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -54,4 +55,22 @@ async function login(req:Request, res: Response){
   }
 
 }
-export { register, login };
+
+async function getProfile(req:CustomRequest, res:Response){
+  try{
+    const user = await prisma.user.findUnique({ 
+      where: { 
+        id: req.user?.id 
+      },
+      include: {
+        medicalHistory: true,
+      } 
+     });
+    res.status(200).json(user);
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+  
+}
+export { register, login, getProfile };

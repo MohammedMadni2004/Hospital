@@ -15,7 +15,7 @@ const Login: React.FC = () => {
     setError(null); 
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('http://localhost:5000/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ const Login: React.FC = () => {
       }
 
       localStorage.setItem('token', data.token); // Store token in local storage
-      navigate('/dashboard'); // Redirect to dashboard
+      navigate('/dashboard'); 
 
     } catch (err: any) {
       setError(err.message); // Set error message
