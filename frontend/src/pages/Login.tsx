@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Heart, Eye, EyeOff } from "lucide-react";
+import apiService from "../services/apiService";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -12,28 +13,22 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); 
+    setError(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await apiService.auth.login(email, password);
 
-      const data = await response.json();
+      // Store token in localStorage
+      localStorage.setItem("token", response.data.token);
+      console.log(response.data);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed!');
-      }
-
-      localStorage.setItem('token', data.token); // Store token in local storage
-      navigate('/dashboard'); 
-
+      // Navigate to dashboard
+      navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message); // Set error message
+      setError(
+        err.response?.data?.error ||
+          "Login failed. Please check your credentials."
+      );
     }
   };
 
@@ -55,7 +50,10 @@ const Login: React.FC = () => {
             {error && <p className="text-red-600 text-center mb-4">{error}</p>}
             <form onSubmit={handleSubmit}>
               <div className="mb-6">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <input
@@ -70,7 +68,10 @@ const Login: React.FC = () => {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -102,12 +103,18 @@ const Login: React.FC = () => {
                     onChange={() => setRememberMe(!rememberMe)}
                     className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-700"
+                  >
                     Remember me
                   </label>
                 </div>
                 <div className="text-sm">
-                  <a href="#" className="font-medium text-purple-600 hover:text-purple-500">
+                  <a
+                    href="#"
+                    className="font-medium text-purple-600 hover:text-purple-500"
+                  >
                     Forgot password?
                   </a>
                 </div>
@@ -123,8 +130,11 @@ const Login: React.FC = () => {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/signup" className="font-medium text-purple-600 hover:text-purple-500">
+                Don't have an account?{" "}
+                <Link
+                  to="/signup"
+                  className="font-medium text-purple-600 hover:text-purple-500"
+                >
                   Sign up
                 </Link>
               </p>

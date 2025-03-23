@@ -8,6 +8,7 @@ import {
   User,
   PlusCircle,
 } from "lucide-react";
+import apiService from "./services/apiService";
 
 // Define TypeScript interfaces for user profile and medical history
 interface MedicalHistory {
@@ -39,18 +40,16 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Check if user is authenticated
+    if (!apiService.isAuthenticated()) {
+      navigate("/");
+      return;
+    }
+
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/user/getProfile", {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch user profile");
-
-        const data: UserProfile = await response.json();
-        setUserProfile(data);
+        const response = await apiService.auth.getProfile();
+        setUserProfile(response.data);
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
@@ -59,7 +58,7 @@ function App() {
     };
 
     fetchUserProfile();
-  }, []);
+  }, [navigate]);
 
   const handleProfileEditClick = () => navigate("/profile/edit");
 
@@ -120,7 +119,8 @@ function App() {
                     <div>
                       <p className="text-gray-600 text-sm">Height</p>
                       <p className="text-2xl font-bold">
-                        {userProfile.Height} <span className="text-sm">inch</span>
+                        {userProfile.Height}{" "}
+                        <span className="text-sm">inch</span>
                       </p>
                     </div>
 
@@ -138,7 +138,9 @@ function App() {
                     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                       <div className="flex items-center mb-2">
                         <Activity className="text-blue-500 mr-2 w-5 h-5" />
-                        <span className="text-gray-600 text-sm">Heart Rate</span>
+                        <span className="text-gray-600 text-sm">
+                          Heart Rate
+                        </span>
                       </div>
                       <p className="text-2xl font-bold ml-1">
                         {userProfile.Heart} BPM
@@ -158,7 +160,9 @@ function App() {
                     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                       <div className="flex items-center mb-2">
                         <Thermometer className="text-blue-500 mr-2 w-5 h-5" />
-                        <span className="text-gray-600 text-sm">Temperature</span>
+                        <span className="text-gray-600 text-sm">
+                          Temperature
+                        </span>
                       </div>
                       <p className="text-2xl font-bold ml-1">
                         {userProfile.Temperature}°F
@@ -175,7 +179,10 @@ function App() {
                   <ul className="list-disc pl-5">
                     {userProfile.medicalHistory.map((history) => (
                       <li key={history.id} className="text-gray-700">
-                        <span className="font-semibold">{history.pastDiagnoses || "Condition"}:</span> {history.medications || "No details"}
+                        <span className="font-semibold">
+                          {history.pastDiagnoses || "Condition"}:
+                        </span>{" "}
+                        {history.medications || "No details"}
                       </li>
                     ))}
                   </ul>

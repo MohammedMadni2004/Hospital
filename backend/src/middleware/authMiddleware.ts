@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt,{ JwtPayload, JsonWebTokenError} from "jsonwebtoken";
+import jwt,{ JwtPayload} from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { CustomRequest } from "../types";
 

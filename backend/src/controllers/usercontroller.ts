@@ -46,6 +46,7 @@ async function login(req:Request, res: Response){
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) return res.status(400).json({ error: "Invalid Password!" });
     const token= await createToken(user.id);
+    console.log({ message: "User logged in successfully", user:user, token:token });
     res.status(200).json({ message: "User logged in successfully", user:user, token:token });
 
 
@@ -58,6 +59,7 @@ async function login(req:Request, res: Response){
 
 async function getProfile(req:CustomRequest, res:Response){
   try{
+    console.log(req.user);
     const user = await prisma.user.findUnique({ 
       where: { 
         id: req.user?.id 
