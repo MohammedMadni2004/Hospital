@@ -16,19 +16,30 @@ const Login: React.FC = () => {
     setError(null);
 
     try {
-      const response = await apiService.auth.login(email, password);
+      const response = await fetch("http://localhost:5000/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Store token in localStorage
-      localStorage.setItem("token", response.data.token);
-      console.log(response.data);
+      const data = await response.json();
 
-      // Navigate to dashboard
-      navigate("/dashboard");
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed!");
+      }
+
+      localStorage.setItem("token", data.token); // Store token in local storage
+
+      // Redirect based on user role
+      if (data.user && data.user.role === "DOCTOR") {
+        navigate("/doctor/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err: any) {
-      setError(
-        err.response?.data?.error ||
-          "Login failed. Please check your credentials."
-      );
+      setError(err.message); // Set error message
     }
   };
 

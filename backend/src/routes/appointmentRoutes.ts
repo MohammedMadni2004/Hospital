@@ -1,5 +1,16 @@
 import express from "express";
+import {
+  creatAppointment,
+  getDoctorAvailability,
+  getAllDoctors,
+} from "../controllers/appointmentcontrollers";
+import { isAuthenticatedUser } from "../middleware/authMiddleware";
 
-const appointMentRouter = express.Router();
+const appointmentRouter = express.Router();
 
-appointMentRouter.post("/create", creatAppointment)
+// Apply auth middleware to protected routes
+appointmentRouter.post("/create", isAuthenticatedUser, creatAppointment);
+appointmentRouter.get("/availability", getDoctorAvailability);
+appointmentRouter.get("/doctors", getAllDoctors);
+
+export default appointmentRouter;
