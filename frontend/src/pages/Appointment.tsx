@@ -17,38 +17,6 @@ import appointmentService, {
 } from "../services/appointmentService";
 import apiService from "../services/apiService";
 
-// Doctor data for initial loading state
-const initialDoctors = [
-  {
-    id: "1",
-    name: "Dr. Lokesh",
-    specialty: "Psychiatrist",
-    avatar:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80",
-  },
-  {
-    id: "2",
-    name: "Dr. Priya",
-    specialty: "Cardiologist",
-    avatar:
-      "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80",
-  },
-  {
-    id: "3",
-    name: "Dr. Rahul",
-    specialty: "Neurologist",
-    avatar:
-      "https://images.unsplash.com/photo-1537368910025-700350fe46c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80",
-  },
-  {
-    id: "4",
-    name: "Dr. Ananya",
-    specialty: "Dermatologist",
-    avatar:
-      "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80",
-  },
-];
-
 const Appointment: React.FC = () => {
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -59,7 +27,8 @@ const Appointment: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [doctorsLoading, setDoctorsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [doctors, setDoctors] = useState<Doctor[]>(initialDoctors);
+  // Use an empty array as initial state instead of hardcoded doctors
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [notifications, setNotifications] = useState<
     Array<{ id: number; type: string; message: string; date: Date }>
   >([
@@ -102,12 +71,10 @@ const Appointment: React.FC = () => {
       setDoctorsLoading(true);
       try {
         const doctorList = await appointmentService.getDoctors();
-        if (doctorList.length > 0) {
-          setDoctors(doctorList);
-        }
+        setDoctors(doctorList);
       } catch (error) {
         console.error("Error fetching doctors:", error);
-        // Keep the initial doctors list as fallback
+        setError("Failed to load doctors. Please try again later.");
       } finally {
         setDoctorsLoading(false);
       }
@@ -469,33 +436,46 @@ const Appointment: React.FC = () => {
                   <User className="mr-2" size={20} />
                   Select a Doctor
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {doctors.map((doctor) => (
-                    <div
-                      key={doctor.id}
-                      onClick={() => handleDoctorSelect(doctor.id)}
-                      className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 hover:shadow-md ${
-                        selectedDoctor === doctor.id
-                          ? "border-purple-600 bg-purple-50"
-                          : "border-gray-200"
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <img
-                          src={doctor.avatar}
-                          alt={doctor.name}
-                          className="w-16 h-16 rounded-full object-cover mr-4"
-                        />
-                        <div>
-                          <h3 className="font-semibold">{doctor.name}</h3>
-                          <p className="text-gray-600 text-sm">
-                            {doctor.specialty}
-                          </p>
+
+                {doctorsLoading ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Loading doctors...</p>
+                  </div>
+                ) : doctors.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">
+                      No doctors available at this time.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {doctors.map((doctor) => (
+                      <div
+                        key={doctor.id}
+                        onClick={() => handleDoctorSelect(doctor.id)}
+                        className={`p-4 border rounded-xl cursor-pointer transition-all duration-300 hover:shadow-md ${
+                          selectedDoctor === doctor.id
+                            ? "border-purple-600 bg-purple-50"
+                            : "border-gray-200"
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <img
+                            src={doctor.avatar}
+                            alt={doctor.name}
+                            className="w-16 h-16 rounded-full object-cover mr-4"
+                          />
+                          <div>
+                            <h3 className="font-semibold">{doctor.name}</h3>
+                            <p className="text-gray-600 text-sm">
+                              {doctor.specialty}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
