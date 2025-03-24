@@ -1,6 +1,5 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { login, register,getProfile } from "../controllers/usercontroller";
 import { isAuthenticatedUser } from "../middleware/authMiddleware";
 
