@@ -43,6 +43,7 @@ model User {
   Temperature String
   name       String
   medicalHistory MedicalHistory[]// Relation to MedicalHistory
+  bedBookings     BedBooking[] // Add this relation
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -59,6 +60,7 @@ model Hospital {
   address   String
   bed_availability  Int
   doctors         Doctor[] // One-to-Many Relationship with Doctors
+  bedBookings     BedBooking[] // New relation
 }
 
 model Doctor {
@@ -126,6 +128,22 @@ model MedicalHistory {
   
 }
 
+// New model for bed bookings
+model BedBooking {
+  id              String   @id @default(uuid())
+  userId          String
+  hospitalId      String
+  bedType         String   // general, icu, emergency, pediatric
+  admissionDate   DateTime
+  reason          String
+  notes           String?
+  status          String   @default("PENDING") // PENDING, CONFIRMED, CANCELED
+  createdAt       DateTime @default(now())
+  
+  user            User     @relation(fields: [userId], references: [id])
+  hospital        Hospital @relation(fields: [hospitalId], references: [id])
+}
+
 // create relations so that appointments can work where in there will be patient and a doctor relation have status also
 // and have a field of string for reports which will be uploaded through cloudinary this is for patients
 //same for prescriptions have field for url which has that file uploaded in prescription
@@ -134,5 +152,5 @@ model MedicalHistory {
 //create cloudinary account
 
 
-//create enum for appointment status haven pending, confirmed, 
+//create enum for appointment status haven pending, confirmed,
 

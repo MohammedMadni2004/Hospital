@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/userRoute";
 import appointmentRouter from "./routes/appointmentRoutes";
 import doctorRouter from "./routes/doctorRoutes";
+import bedBookingRouter from "./routes/bedBookingRoutes";
 import { Request, Response } from "express";
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(bodyParser.json({ limit: "35mb" }));
 app.use("/api/user", userRoutes);
 app.use("/api/appointments", appointmentRouter);
 app.use("/api/doctor", doctorRouter);
+app.use("/api/beds", bedBookingRouter);
 
 const PORT = process.env.PORT || 5000;
 app.get("/", (req: Request, res: Response) => {
