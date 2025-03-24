@@ -216,4 +216,44 @@ async function cancelBooking(req: CustomRequest, res: Response) {
   }
 }
 
-export { getHospitals, bookBed, getUserBookings, cancelBooking };
+// Get all bed types with descriptions
+async function getBedTypes(req: CustomRequest, res: Response) {
+  try {
+    // Since bed types are configuration data that rarely changes,
+    // we can define them here instead of storing in the database
+    const bedTypes = [
+      {
+        id: "general",
+        name: "General Ward",
+        description: "Shared room with basic amenities and nursing care",
+        icon: "Bed", // Frontend will map these to actual icon components
+      },
+      {
+        id: "icu",
+        name: "ICU",
+        description:
+          "Intensive care unit with 24/7 monitoring and specialized equipment",
+        icon: "AlertCircle",
+      },
+      {
+        id: "emergency",
+        name: "Emergency",
+        description: "Immediate care for critical conditions",
+        icon: "Phone",
+      },
+      {
+        id: "pediatric",
+        name: "Pediatric",
+        description: "Specialized care for children and infants",
+        icon: "Star",
+      },
+    ];
+
+    res.status(200).json(bedTypes);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export { getHospitals, bookBed, getUserBookings, cancelBooking, getBedTypes };

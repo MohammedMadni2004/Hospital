@@ -16,37 +16,19 @@ import {
   ChevronRight,
   Info,
 } from "lucide-react";
-import bedBookingService, { Hospital } from "../services/bedBookingService";
+import bedBookingService, {
+  Hospital,
+  BedType,
+} from "../services/bedBookingService";
 import apiService from "../services/apiService";
 
-// Bed types with descriptions
-const bedTypes = [
-  {
-    id: "general",
-    name: "General Ward",
-    description: "Shared room with basic amenities and nursing care",
-    icon: <Bed size={20} />,
-  },
-  {
-    id: "icu",
-    name: "ICU",
-    description:
-      "Intensive care unit with 24/7 monitoring and specialized equipment",
-    icon: <AlertCircle size={20} />,
-  },
-  {
-    id: "emergency",
-    name: "Emergency",
-    description: "Immediate care for critical conditions",
-    icon: <Phone size={20} />,
-  },
-  {
-    id: "pediatric",
-    name: "Pediatric",
-    description: "Specialized care for children and infants",
-    icon: <Star size={20} />,
-  },
-];
+// Map icon strings to actual Lucide icon components
+const iconMap: Record<string, React.ReactNode> = {
+  Bed: <Bed size={20} />,
+  AlertCircle: <AlertCircle size={20} />,
+  Phone: <Phone size={20} />,
+  Star: <Star size={20} />,
+};
 
 const BedAvailability: React.FC = () => {
   const navigate = useNavigate();
@@ -66,6 +48,7 @@ const BedAvailability: React.FC = () => {
     notes: "",
   });
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [bedTypes, setBedTypes] = useState<BedType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,9 +77,23 @@ const BedAvailability: React.FC = () => {
       }
     }
 
-    // Fetch hospitals
+    // Fetch bed types and hospitals
+    fetchBedTypes();
     fetchHospitals();
   }, [navigate]);
+
+  const fetchBedTypes = async () => {
+    try {
+      const bedTypesData = await bedBookingService.getBedTypes();
+      if (bedTypesData.length > 0) {
+        setBedTypes(bedTypesData);
+        // Set the first bed type as default
+        setSelectedBedType(bedTypesData[0].id);
+      }
+    } catch (err: any) {
+      console.error("Failed to fetch bed types:", err);
+    }
+  };
 
   const fetchHospitals = async () => {
     setLoading(true);
@@ -109,6 +106,11 @@ const BedAvailability: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Get icon component for a bed type
+  const getBedTypeIcon = (iconName: string) => {
+    return iconMap[iconName] || <Bed size={20} />;
   };
 
   // Filter hospitals based on search term and bed availability
@@ -334,7 +336,9 @@ const BedAvailability: React.FC = () => {
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                         >
-                          <span className="mr-2">{type.icon}</span>
+                          <span className="mr-2">
+                            {getBedTypeIcon(type.icon)}
+                          </span>
                           {type.name}
                         </button>
                       ))}
@@ -409,7 +413,10 @@ const BedAvailability: React.FC = () => {
                 <div className="mb-6 bg-blue-50 p-4 rounded-lg">
                   <div className="flex">
                     <div className="mr-3 text-blue-500">
-                      {bedTypes.find((b) => b.id === selectedBedType)?.icon}
+                      {getBedTypeIcon(
+                        bedTypes.find((b) => b.id === selectedBedType)?.icon ||
+                          "Bed"
+                      )}
                     </div>
                     <div>
                       <h3 className="font-semibold text-blue-800">

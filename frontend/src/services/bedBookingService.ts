@@ -36,6 +36,13 @@ export interface BedBooking {
   hospital: Hospital;
 }
 
+export interface BedType {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
 const bedBookingService = {
   // Get all hospitals with bed availability
   getHospitals: async (): Promise<Hospital[]> => {
@@ -90,6 +97,17 @@ const bedBookingService = {
       throw new Error(
         error.response?.data?.message || "Failed to cancel booking"
       );
+    }
+  },
+
+  // Get all bed types
+  getBedTypes: async (): Promise<BedType[]> => {
+    try {
+      const response = await apiService.get("/beds/types");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bed types:", error);
+      return [];
     }
   },
 };
