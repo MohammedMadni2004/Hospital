@@ -9,6 +9,7 @@ import {
   PlusCircle,
 } from "lucide-react";
 import apiService from "./services/apiService";
+import BedBookingHistory from "./components/BedBookingHistory";
 
 // Define TypeScript interfaces for user profile and medical history
 interface MedicalHistory {
@@ -189,6 +190,11 @@ function App() {
                 ) : (
                   <p className="text-gray-600">No medical history available.</p>
                 )}
+              </div>
+
+              {/* Bed Booking History */}
+              <div className="mt-6">
+                <BedBookingHistory />
               </div>
             </div>
           ) : (

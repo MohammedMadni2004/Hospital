@@ -1,11 +1,10 @@
 import { CustomRequest } from "../types";
 import { Response } from "express";
-
-import {PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Get all hospitals with bed availability
+// Get all hospitals with bed availability and detailed information
 async function getHospitals(req: CustomRequest, res: Response) {
   try {
     const hospitals = await prisma.hospital.findMany({
@@ -14,10 +13,57 @@ async function getHospitals(req: CustomRequest, res: Response) {
         name: true,
         address: true,
         bed_availability: true,
+        rating: true,
+        image_url: true,
+        location_distance: true,
+        price_general: true,
+        price_icu: true,
+        price_emergency: true,
+        price_pediatric: true,
       },
     });
 
-    res.status(200).json(hospitals);
+    // Format the response for frontend consumption
+    const formattedHospitals = hospitals.map((hospital) => ({
+      id: hospital.id,
+      name: hospital.name,
+      address: hospital.address,
+      bed_availability: hospital.bed_availability,
+      distance: hospital.location_distance
+        ? `${hospital.location_distance} km`
+        : "N/A",
+      rating: hospital.rating || 4.5,
+      image:
+        hospital.image_url ||
+        "https://images.unsplash.com/photo-1587351021759-3e566b3db4f1?auto=format&fit=crop&w=1350&q=80",
+      price_per_day: hospital.price_general || 2500,
+      price: {
+        general: hospital.price_general || 2500,
+        icu: hospital.price_icu || 8500,
+        emergency: hospital.price_emergency || 5000,
+        pediatric: hospital.price_pediatric || 3500,
+      },
+      beds: {
+        general: {
+          available: Math.floor(hospital.bed_availability / 4),
+          total: Math.floor(hospital.bed_availability / 4) + 10,
+        },
+        icu: {
+          available: Math.floor(hospital.bed_availability / 4),
+          total: Math.floor(hospital.bed_availability / 4) + 5,
+        },
+        emergency: {
+          available: Math.floor(hospital.bed_availability / 4),
+          total: Math.floor(hospital.bed_availability / 4) + 3,
+        },
+        pediatric: {
+          available: Math.floor(hospital.bed_availability / 4),
+          total: Math.floor(hospital.bed_availability / 4) + 7,
+        },
+      },
+    }));
+
+    res.status(200).json(formattedHospitals);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -50,7 +96,7 @@ async function bookBed(req: CustomRequest, res: Response) {
       return res.status(404).json({ message: "Hospital not found" });
     }
 
-    // Check if bed is available (in a real app, we would check specific bed types)
+    // Check if bed is available
     if (hospital.bed_availability <= 0) {
       return res
         .status(400)
@@ -68,7 +114,7 @@ async function bookBed(req: CustomRequest, res: Response) {
       // Create the booking
       return tx.bedBooking.create({
         data: {
-          userId: req.user?.id,
+          userId: req.user.id,
           hospitalId,
           bedType,
           admissionDate: new Date(admissionDate),
@@ -92,7 +138,7 @@ async function bookBed(req: CustomRequest, res: Response) {
 // Get user's bed bookings
 async function getUserBookings(req: CustomRequest, res: Response) {
   try {
-    
+    // Check if user is authenticated
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }

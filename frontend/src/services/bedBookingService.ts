@@ -5,10 +5,22 @@ export interface Hospital {
   name: string;
   address: string;
   bed_availability: number;
-  distance?: string; // We'll calculate this on the frontend
-  rating?: number; // Mock data for now
-  image?: string; // Mock data for now
-  price_per_day?: number; // Mock data for now
+  distance: string;
+  rating: number;
+  image: string;
+  price_per_day: number;
+  price: {
+    general: number;
+    icu: number;
+    emergency: number;
+    pediatric: number;
+  };
+  beds: {
+    general: { available: number; total: number };
+    icu: { available: number; total: number };
+    emergency: { available: number; total: number };
+    pediatric: { available: number; total: number };
+  };
 }
 
 export interface BedBooking {
@@ -29,18 +41,7 @@ const bedBookingService = {
   getHospitals: async (): Promise<Hospital[]> => {
     try {
       const response = await apiService.get("/beds/hospitals");
-
-      // Add mock data for UI
-      const hospitalsWithMockData = response.data.map((hospital: Hospital) => ({
-        ...hospital,
-        distance: `${(Math.random() * 10).toFixed(1)} km`,
-        rating: 4 + Math.random(),
-        image: `https://images.unsplash.com/photo-${Math.floor(
-          Math.random() * 1000000
-        )}?q=80`,
-      }));
-
-      return hospitalsWithMockData;
+      return response.data;
     } catch (error) {
       console.error("Error fetching hospitals:", error);
       return [];

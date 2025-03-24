@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, Eye, EyeOff } from "lucide-react";
-import apiService from "../services/apiService";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +30,19 @@ const Login: React.FC = () => {
       }
 
       localStorage.setItem("token", data.token); // Store token in local storage
+
+      // Store user data for use across the app
+      if (data.user) {
+        localStorage.setItem(
+          "userData",
+          JSON.stringify({
+            id: data.user.id,
+            name: data.user.name,
+            email: data.user.email,
+            role: data.user.role,
+          })
+        );
+      }
 
       // Redirect based on user role
       if (data.user && data.user.role === "DOCTOR") {

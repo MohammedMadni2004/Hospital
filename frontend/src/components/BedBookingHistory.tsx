@@ -5,7 +5,7 @@ import {
   X,
   AlertCircle,
   RefreshCw,
-  Stethoscope, // Replacing Hospital with a valid icon
+  Stethoscope,
 } from "lucide-react";
 import bedBookingService, { BedBooking } from "../services/bedBookingService";
 
@@ -34,6 +34,7 @@ const BedBookingHistory: React.FC = () => {
   const handleCancelBooking = async (bookingId: string) => {
     try {
       await bedBookingService.cancelBooking(bookingId);
+      // Update the local state
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking.id === bookingId

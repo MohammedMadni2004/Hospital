@@ -59,8 +59,15 @@ model Hospital {
   name      String
   address   String
   bed_availability  Int
-  doctors         Doctor[] // One-to-Many Relationship with Doctors
-  bedBookings     BedBooking[] // New relation
+  rating    Float?
+  image_url String?
+  location_distance Float?
+  price_general     Int?
+  price_icu         Int?
+  price_emergency   Int?
+  price_pediatric   Int?
+  doctors           Doctor[] // One-to-Many Relationship with Doctors
+  bedBookings       BedBooking[] // New relation
 }
 
 model Doctor {
